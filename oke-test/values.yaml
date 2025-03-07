@@ -1,0 +1,33 @@
+# 名前空間ごとに異なる設定を記載
+namespace:
+    namespace1:
+        name: tenant-a
+        port: 80
+        portName: port-a
+    namespace2:
+        name: tenant-b
+        port: 8080
+        portName: port-b
+
+#デプロイメントの設定を記載
+deployment:
+    replicaCount: 1
+    template:
+        frontendImageA: nginx:alpine
+        frontendImageB: caddy:alpine
+        backendImage: python:3.8-alpine
+        backendCommand: ["python", "-m", "http.server", "5000"]
+
+#ラベルの設定を記載
+selector:
+    frontendLabel: frontend
+    backendLabel: backend
+
+#サービスの設定を記載
+service:
+    type: LoadBalancer
+    ports:
+        protocol: TCP
+        frontendTargetPort: 80
+        backendPort: 5000
+        backendTargetPort: 5000

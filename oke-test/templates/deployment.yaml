@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend-deployment-a #デプロイメント名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+spec:
+    replicas: {{ .Values.deployment.replicaCount }} #レプリカ数を指定
+    selector:
+        matchLabels:
+            app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
+        spec:
+            containers:
+                - name: frontend-container-a
+                  image: {{ .Values.deployment.template.frontendImageA }} #フロントエンドのコンテナイメージを指定
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend-deployment-b
+    namespace: {{ .Values.namespace.namespace2.name }}
+spec:
+    replicas: {{ .Values.deployment.replicaCount }}
+    selector:
+        matchLabels:
+            app: {{ .Values.selector.frontendLabel }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.selector.frontendLabel }}
+        spec:
+            containers:
+                - name: frontend-container-b
+                  image: {{ .Values.deployment.template.frontendImageB }}
+---
+#バックエンドのデプロイメントの作成
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backend-deployment-a #デプロイメント名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+spec:
+    replicas: {{ .Values.deployment.replicaCount }} #レプリカ数を指定
+    selector:
+        matchLabels:
+            app: {{ .Values.selector.backendLabel }} #バックエンドのラベルを指定
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.selector.backendLabel}} #バックエンドのラベルを指定
+        spec:
+            containers:
+                - name: backend-container-a
+                  image: {{ .Values.deployment.template.backendImage }} #バックエンドのコンテナイメージを指定
+                  command: {{ .Values.deployment.template.backendCommand | toJson }} #コンテナの起動コマンドを指定
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backend-deployment-b
+    namespace: {{ .Values.namespace.namespace2.name }}
+spec:
+    replicas: {{ .Values.deployment.replicaCount }}
+    selector:
+        matchLabels:
+            app: {{ .Values.selector.backendLabel }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.selector.backendLabel }}
+        spec:
+            containers:
+                - name: backend-container-b
+                  image: {{ .Values.deployment.template.backendImage }}
+                  command: {{ .Values.deployment.template.backendCommand | toJson}}

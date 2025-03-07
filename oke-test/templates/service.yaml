@@ -1,0 +1,49 @@
+#フロントエンドのサービスの作成
+apiVersion: v1
+kind: Service
+metadata:
+    name: frontend-lb #サービス名を決定
+    annotations:
+        # ロードバランサの設定(フレキシブルロードバランサを設定)
+        service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
+        service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
+        service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "100"
+spec:
+    type: {{ .Values.service.type }} #サービスのタイプを指定
+    ports:
+        - protocol: {{ .Values.service.ports.protocol }} #プロトコルを指定
+          port: {{ .Values.namespace.namespace1.port }} #ルーティングされるポート番号を指定
+          targetPort: {{ .Values.service.ports.frontendTargetPort }} #ターゲットポートを指定
+          name: {{ .Values.namespace.namespace1.portName }} #ポートの名前を指定
+        - protocol: {{ .Values.service.ports.protocol }}
+          port: {{ .Values.namespace.namespace2.port }}
+          targetPort: {{ .Values.service.ports.frontendTargetPort }}
+          name: {{ .Values.namespace.namespace2.portName }}
+
+---
+#バックエンドのサービスの作成
+apiVersion: v1
+kind: Service
+metadata:
+    name: backend-service-a #サービス名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+spec:
+    selector:
+        app: {{ .Values.selector.backendLabel }} #バックエンドのデプロイメントのラベルを指定
+    ports:
+        - protocol: {{ .Values.service.ports.protocol }} #プロトコルを指定
+          port: {{ .Values.service.ports.backendPort }} #ルーティングされるポート番号を指定
+          targetPort: {{ .Values.service.ports.backendTargetPort }} #ターゲットポートを指定
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: backend-service-b
+    namespace: {{ .Values.namespace.namespace2.name }}
+spec:
+    selector:
+        app: {{ .Values.selector.backendLabel }}
+    ports:
+        - protocol: {{ .Values.service.ports.protocol }}
+          port: {{ .Values.service.ports.backendPort }}
+          targetPort: {{ .Values.service.ports.backendTargetPort }}
