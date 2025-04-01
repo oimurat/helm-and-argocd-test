@@ -3,18 +3,16 @@ namespace:
     namespace1:
         name: tenant-a
         port: 8080
-        portName: port-a
     namespace2:
         name: tenant-b
         port: 8081
-        portName: port-b
 
 #デプロイメントの設定を記載
 deployment:
     replicaCount: 1
     template:
-        frontendImageA: nginx:alpine
-        frontendImageB: caddy:alpine
+        frontendImageA: nginx:latest
+        frontendImageB: caddy:latest
         backendImage: python:3.8-alpine
         backendCommand: ["python", "-m", "http.server", "5000"]
 

@@ -16,7 +16,7 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: nginx
+              name: nginx-server
               port:
                 number: 8080
 ---
@@ -38,7 +38,7 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: caddy
+              name: caddy-server
               port:
                 number: 8081
 ---
