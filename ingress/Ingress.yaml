@@ -50,7 +50,7 @@ metadata:
   annotations:
     oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
     oci-native-ingress.oraclecloud.com/healthcheck-port: "8080"
-    oci-native-ingress.oraclecloud.com/healthcheck-path: "/"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/argocd/"
 spec:
     ingressClassName: native-ic-ingress-class
     rules:
