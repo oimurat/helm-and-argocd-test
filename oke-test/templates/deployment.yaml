@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: nginx-server #デプロイメント名を決定
+    name: caddy-server #デプロイメント名を決定
     namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
     labels:
         app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
@@ -16,7 +16,7 @@ spec:
                 app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
         spec:
             containers:
-                - name: nginx-server
+                - name: caddy-server
                   image: {{ .Values.deployment.template.frontendImageA }} #フロントエンドのコンテナイメージを指定
                   ports:
                     - containerPort: {{ .Values.service.ports.frontendTargetPort }} #コンテナポートを指定
