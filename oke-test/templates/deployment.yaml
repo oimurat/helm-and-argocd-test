@@ -22,30 +22,6 @@ spec:
                     - containerPort: {{ .Values.service.ports.frontendTargetPort }} #コンテナポートを指定
                       protocol: TCP #プロトコルを指定
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-    name: caddy-server
-    namespace: {{ .Values.namespace.namespace2.name }}
-    labels:
-        app: {{ .Values.selector.frontendLabel }}
-spec:
-    replicas: {{ .Values.deployment.replicaCount }}
-    selector:
-        matchLabels:
-            app: {{ .Values.selector.frontendLabel }}
-    template:
-        metadata:
-            labels:
-                app: {{ .Values.selector.frontendLabel }}
-        spec:
-            containers:
-                - name: caddy-server
-                  image: {{ .Values.deployment.template.frontendImageB }}
-                  ports:
-                    - containerPort: {{ .Values.service.ports.frontendTargetPort }}
-                      protocol: TCP
----
 #バックエンドのデプロイメントの作成
 apiVersion: apps/v1
 kind: Deployment
@@ -66,23 +42,3 @@ spec:
                 - name: backend-container-a
                   image: {{ .Values.deployment.template.backendImage }} #バックエンドのコンテナイメージを指定
                   command: {{ .Values.deployment.template.backendCommand | toJson }} #コンテナの起動コマンドを指定
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-    name: backend-deployment-b
-    namespace: {{ .Values.namespace.namespace2.name }}
-spec:
-    replicas: {{ .Values.deployment.replicaCount }}
-    selector:
-        matchLabels:
-            app: {{ .Values.selector.backendLabel }}
-    template:
-        metadata:
-            labels:
-                app: {{ .Values.selector.backendLabel }}
-        spec:
-            containers:
-                - name: backend-container-b
-                  image: {{ .Values.deployment.template.backendImage }}
-                  command: {{ .Values.deployment.template.backendCommand | toJson}}

@@ -12,35 +12,13 @@ spec:
     rules:
     - http:
         paths:
-        - path: /nginx
+        - path: /
           pathType: Prefix
           backend:
             service:
               name: nginx-server
               port:
-                number: 8080
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: caddy-ingress
-  namespace: tenant-b
-  annotations:
-    oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
-    oci-native-ingress.oraclecloud.com/healthcheck-port: "80"
-    oci-native-ingress.oraclecloud.com/healthcheck-path: "/"
-spec:
-    ingressClassName: native-ic-ingress-class
-    rules:
-    - http:
-        paths:
-        - path: /caddy
-          pathType: Prefix
-          backend:
-            service:
-              name: caddy-server
-              port:
-                number: 8081
+                number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
