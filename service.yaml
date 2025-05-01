@@ -1,0 +1,30 @@
+#フロントエンドのサービスの作成
+apiVersion: v1
+kind: Service
+metadata:
+    name: nginx-server #サービス名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+    labels:
+        app: {{ .Values.selector.frontendLabel }} #フロントエンドのデプロイメントのラベルを指定
+spec:
+    type: ClusterIP #サービスのタイプを指定
+    selector:
+        app: {{ .Values.selector.frontendLabel }} #フロントエンドのデプロイメントのラベルを指定
+    ports:
+        - protocol: {{ .Values.service.ports.protocol }} #プロトコルを指定
+          port: {{ .Values.namespace.namespace1.port }} #ルーティングされるポート番号を指定
+          targetPort: {{ .Values.service.ports.frontendTargetPort }} #ターゲットポートを指定
+---
+#バックエンドのサービスの作成
+apiVersion: v1
+kind: Service
+metadata:
+    name: backend-service-a #サービス名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+spec:
+    selector:
+        app: {{ .Values.selector.backendLabel }} #バックエンドのデプロイメントのラベルを指定
+    ports:
+        - protocol: {{ .Values.service.ports.protocol }} #プロトコルを指定
+          port: {{ .Values.service.ports.backendPort }} #ルーティングされるポート番号を指定
+          targetPort: {{ .Values.service.ports.backendTargetPort }} #ターゲットポートを指定

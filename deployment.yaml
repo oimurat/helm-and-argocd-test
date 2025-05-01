@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nginx-server #デプロイメント名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+    labels:
+        app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
+spec:
+    replicas: {{ .Values.deployment.replicaCount }} #レプリカ数を指定
+    selector:
+        matchLabels:
+            app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.selector.frontendLabel }} #フロントエンドのラベルを指定
+        spec:
+            containers:
+                - name: nginx-server
+                  image: {{ .Values.deployment.template.frontendImageA }} #フロントエンドのコンテナイメージを指定
+                  ports:
+                    - containerPort: {{ .Values.service.ports.frontendTargetPort }} #コンテナポートを指定
+                      protocol: TCP #プロトコルを指定
+---
+#バックエンドのデプロイメントの作成
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: backend-deployment-a #デプロイメント名を決定
+    namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
+spec:
+    replicas: {{ .Values.deployment.replicaCount }} #レプリカ数を指定
+    selector:
+        matchLabels:
+            app: {{ .Values.selector.backendLabel }} #バックエンドのラベルを指定
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.selector.backendLabel}} #バックエンドのラベルを指定
+        spec:
+            containers:
+                - name: backend-container-a
+                  image: {{ .Values.deployment.template.backendImage }} #バックエンドのコンテナイメージを指定
+                  command: {{ .Values.deployment.template.backendCommand | toJson }} #コンテナの起動コマンドを指定
