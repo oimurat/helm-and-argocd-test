@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: nginx-server
+  namespace: {{ .Values.namespace.namespace1.name }}
+  labels:
+    app: {{ .Values.selector.frontendLabel }}
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  revisionHistoryLimit: 2 #過去のリビジョンをいくつ保持するか
+  selector:
+    matchLabels:
+      app: {{ .Values.selector.frontendLabel }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.selector.frontendLabel }}
+    spec:
+      containers:
+        - name: nginx-server
+          image: {{ .Values.deployment.template.frontendImageA }}
+          ports:
+            - containerPort: {{ .Values.service.ports.frontendTargetPort }}
+              protocol: TCP
+  strategy:
+    blueGreen:
+      activeService: nginx-server-active
+      previewService: nginx-server-preview
+      autoPromotionEnabled: true

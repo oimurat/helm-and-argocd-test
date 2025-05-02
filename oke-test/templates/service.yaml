@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: nginx-server #サービス名を決定
+    name: nginx-server-active #サービス名を決定
     namespace: {{ .Values.namespace.namespace1.name }} #配置される名前空間を指定
     labels:
         app: {{ .Values.selector.frontendLabel }} #フロントエンドのデプロイメントのラベルを指定
@@ -13,3 +13,19 @@ spec:
         - protocol: {{ .Values.service.ports.protocol }} #プロトコルを指定
           port: {{ .Values.namespace.namespace1.port }} #ルーティングされるポート番号を指定
           targetPort: {{ .Values.service.ports.frontendTargetPort }} #ターゲットポートを指定
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: nginx-server-preview
+    namespace: {{ .Values.namespace.namespace1.name }}
+    labels:
+        app: {{ .Values.selector.frontendLabel }}
+spec:
+    type: ClusterIP
+    selector:
+        app: {{ .Values.selector.frontendLabel }}
+    ports:
+        - protocol: {{ .Values.service.ports.protocol }}
+          port: {{ .Values.namespace.namespace1.port }}
+          targetPort: {{ .Values.service.ports.frontendTargetPort }}
