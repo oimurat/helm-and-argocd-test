@@ -21,6 +21,6 @@ selector:
 service:
     ports:
         protocol: TCP
-        frontendTargetPort: "mozi"
+        frontendTargetPort: 80
         backendPort: 5000
         backendTargetPort: 5000
