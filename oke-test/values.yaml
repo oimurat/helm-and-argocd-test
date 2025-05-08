@@ -21,6 +21,6 @@ selector:
 service:
     ports:
         protocol: TCP
-        frontendTargetPort: "aaa"
+        frontendTargetPort: 80
         backendPort: 5000
         backendTargetPort: 5000
