@@ -1,0 +1,47 @@
+# ClusterRole: Workflows, WorkflowTemplates, WorkflowTaskResults に必要な権限を付与
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argo-events-workflow-submitter
+rules:
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflows"]
+    verbs: ["create", "list"]
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflowtemplates"]
+    verbs: ["get"]
+  - apiGroups: ["argoproj.io"]
+    resources: ["workflowtaskresults"]
+    verbs: ["create", "patch"]
+
+---
+
+# ClusterRoleBinding: Sensor から Workflow submit 用（argo-events namespace の ServiceAccount）
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-events-sensor-workflow-binding
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: argo-events
+roleRef:
+  kind: ClusterRole
+  name: argo-events-workflow-submitter
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+# ClusterRoleBinding: 実行される Workflow が使用する ServiceAccount 用（argo namespace）
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argo-default-sa-workflowtaskresults-binding
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: argo
+roleRef:
+  kind: ClusterRole
+  name: argo-events-workflow-submitter
+  apiGroup: rbac.authorization.k8s.io

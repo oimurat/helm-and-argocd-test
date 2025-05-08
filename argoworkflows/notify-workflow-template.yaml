@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: notify-workflow-template
+  namespace: argo
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 300
+  entrypoint: main
+  templates:
+    - name: main
+      container:
+        image: alpine
+        command: [sh, -c]
+        args: ["echo '🚀 Workflow from template triggered!' && sleep 5"]

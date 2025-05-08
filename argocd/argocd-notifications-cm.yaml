@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.webhook.argo-events-sync-started: |
+    url: http://argocd-webhook-eventsource-svc.argo-events.svc.cluster.local:12000/sync-started
+    method: POST
+
+  service.webhook.argo-events-sync-failed: |
+    url: http://argocd-webhook-eventsource-svc.argo-events.svc.cluster.local:12000/sync-failed
+    method: POST
+
+  template.webhook-start: |
+    webhook:
+      argo-events-sync-started:
+        method: POST
+        body: |
+          {
+            "application": "{{ .app.metadata.name }}",
+            "syncStatus": "{{ .app.status.sync.status }}",
+            "healthStatus": "{{ .app.status.health.status }}"
+          }
+
+  template.rollback-start: |
+    webhook:
+      argo-events-sync-failed:
+        method: POST
+        body: |
+          {
+            "application": "{{ .app.metadata.name }}",
+            "syncStatus": "{{ .app.status.sync.status }}",
+            "healthStatus": "{{ .app.status.health.status }}",
+            "result": "failed"
+          }
+
+  trigger.on-sync-running: |
+    - when: app.status.operationState.phase == 'Running'
+      send:
+        - webhook-start
+
+  trigger.on-sync-failed: |
+    - when: app.status.operationState.phase in ['Error', 'Failed']
+      send:
+        - rollback-start

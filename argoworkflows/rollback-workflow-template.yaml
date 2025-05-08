@@ -1,0 +1,47 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: rollback-workflow-template
+  namespace: argo
+spec:
+  ttlStrategy:
+    secondsAfterCompletion: 300
+  entrypoint: rollback
+  templates:
+    - name: rollback
+      container:
+        image: bitnami/argo-cd:latest
+        command: [sh, -c]
+        args:
+          - |
+            echo "🚨 Starting rollback!"
+            set -e
+            echo "Logging in to Argo CD..."
+            argocd login $ARGOCD_SERVER --username $ARGOCD_USERNAME --password $ARGOCD_PASSWORD --insecure --plaintext --grpc-web-root-path /argocd
+            echo "✅ Login successful"
+
+            echo "Getting previous deployment ID..."
+            PREV_ID=$(argocd app history test-app | awk 'NR==3 {print $1}')
+            if [ -z "$PREV_ID" ]; then
+              echo "❌ No previous revision found"
+              exit 1
+            fi
+
+            echo "Disabling auto-sync..."
+            argocd app set test-app --sync-policy none
+
+            echo "Rolling back to revision $PREV_ID"
+            argocd app rollback test-app $PREV_ID
+        env:
+          - name: ARGOCD_SERVER
+            value: argocd-server.argocd.svc.cluster.local
+          - name: ARGOCD_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: argocd-credentials
+                key: username
+          - name: ARGOCD_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: argocd-credentials
+                key: password
