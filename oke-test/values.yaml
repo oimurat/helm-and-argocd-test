@@ -8,7 +8,7 @@ namespace:
 deployment:
     replicaCount: 1
     template:
-        frontendImageA: nginx:latest
+        frontendImageA: nginx:alpine
         backendImage: python:3.8-alpine
         backendCommand: ["python", "-m", "http.server", "5000"]
 
