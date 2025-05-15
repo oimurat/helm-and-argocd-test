@@ -25,3 +25,7 @@ service:
         frontendTargetPort: 80
         backendPort: 5000
         backendTargetPort: 5000
+
+env:
+    environment: production
+    appVersion: "1"
