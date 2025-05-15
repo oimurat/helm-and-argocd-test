@@ -9,7 +9,7 @@ deployment:
     replicaCount: 1
     template:
         frontendImage: "nginx"
-        frontendImageTag: "alpine"
+        frontendImageTag: 1.28.0
         backendImage: python:3.8-alpine
         backendCommand: ["python", "-m", "http.server", "5000"]
 
