@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: nginx-server
-          image: {{ .Values.deployment.template.frontendImageA }}
+          image: {{ .Values.deployment.template.frontendImage }}:{{ .Values.deployment.template.frontendImageTag }}
           ports:
             - containerPort: {{ .Values.service.ports.frontendTargetPort }}
               protocol: TCP
