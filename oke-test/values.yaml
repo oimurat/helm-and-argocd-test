@@ -28,4 +28,4 @@ service:
 
 env:
     environment: production
-    appVersion: "1"
+    appVersion: 1
