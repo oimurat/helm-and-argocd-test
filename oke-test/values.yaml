@@ -9,7 +9,7 @@ deployment:
     replicaCount: 1
     template:
         frontendImage: "nginx"
-        frontendImageTag: "latest"
+        frontendImageTag: "alpine"
         backendImage: python:3.8-alpine
         backendCommand: ["python", "-m", "http.server", "5000"]
 
@@ -22,6 +22,6 @@ selector:
 service:
     ports:
         protocol: TCP
-        frontendTargetPort: "80"
+        frontendTargetPort: "8080"
         backendPort: 5000
         backendTargetPort: 5000
