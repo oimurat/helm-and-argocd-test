@@ -10,11 +10,6 @@ spec:
       - port: 12000
         targetPort: 12000
   webhook:
-    argocd-sync-started:
-      endpoint: /sync-started
-      method: POST
-      port: "12000"
-
     argocd-sync-failed:
       endpoint: /sync-failed
       method: POST

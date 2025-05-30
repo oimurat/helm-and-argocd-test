@@ -6,35 +6,11 @@ metadata:
 spec:
   eventBusName: default
   dependencies:
-    - name: argocd-sync-started-dep
-      eventSourceName: argocd-webhook
-      eventName: argocd-sync-started
     - name: argocd-sync-failed-dep
       eventSourceName: argocd-webhook
       eventName: argocd-sync-failed
 
   triggers:
-    - template:
-        conditions: "argocd-sync-started-dep"
-        name: trigger-notify-template
-        argoWorkflow:
-          group: argoproj.io
-          version: v1alpha1
-          resource: workflows
-          operation: submit
-          submitOptions:
-            namespace: argo
-          source:
-            resource:
-              apiVersion: argoproj.io/v1alpha1
-              kind: Workflow
-              metadata:
-                generateName: notify-workflow-
-                namespace: argo
-              spec:
-                workflowTemplateRef:
-                  name: notify-workflow-template
-
     - template:
         conditions: "argocd-sync-failed-dep"
         name: trigger-rollback-template

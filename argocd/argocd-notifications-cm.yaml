@@ -4,24 +4,16 @@ metadata:
   name: argocd-notifications-cm
   namespace: argocd
 data:
-  service.webhook.argo-events-sync-started: |
-    url: http://argocd-webhook-eventsource-svc.argo-events.svc.cluster.local:12000/sync-started
-    method: POST
-
   service.webhook.argo-events-sync-failed: |
     url: http://argocd-webhook-eventsource-svc.argo-events.svc.cluster.local:12000/sync-failed
     method: POST
 
-  template.webhook-start: |
-    webhook:
-      argo-events-sync-started:
-        method: POST
-        body: |
-          {
-            "application": "{{ .app.metadata.name }}",
-            "syncStatus": "{{ .app.status.sync.status }}",
-            "healthStatus": "{{ .app.status.health.status }}"
-          }
+  service.googlechat: |
+    webhooks:
+      spaceName: https://chat.googleapis.com/v1/spaces/AAQAy78t7vA/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=KSEIEoWiwxPEwm4YczechZWoxdv6K4dBncn9Mf8Cpew
+
+  template.sync-start: |
+    message: "{{ .app.metadata.name }} has started syncing"
 
   template.rollback-start: |
     webhook:
@@ -35,12 +27,24 @@ data:
             "result": "failed"
           }
 
+  template.sync-failed: |
+    message: "{{ .app.metadata.name }} has failed to sync"
+
+  template.sync-succeeded: |
+    message: "{{ .app.metadata.name }} has successfully synced"
+
   trigger.on-sync-running: |
     - when: app.status.operationState.phase == 'Running'
       send:
-        - webhook-start
+        - sync-start
 
   trigger.on-sync-failed: |
     - when: app.status.operationState.phase in ['Error', 'Failed']
       send:
         - rollback-start
+        - sync-failed
+
+  trigger.on-sync-succeeded: |
+    - when: app.status.operationState.phase == 'Succeeded'
+      send:
+        - sync-succeeded
